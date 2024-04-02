@@ -1,8 +1,8 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { AsyncStorage } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from '../../axios';
 
-export const fetchSoonScreen = createAsyncThunk('soonScreen/fetchSoonScreen', async () => {
+export const getSoonScreen = createAsyncThunk('soonScreen/fetchSoonScreen', async () => {
 	const today = new Date();
 	const tomorrow = new Date(today);
 	tomorrow.setDate(today.getDate() + 1);
@@ -26,14 +26,14 @@ const soonScreenSlice = createSlice({
 	initialState,
 	reducers: {},
 	extraReducers: (builder) => {
-		builder.addCase(fetchSoonScreen.pending, (state) => {
+		builder.addCase(getSoonScreen.pending, (state) => {
 			state.loading = true;
 		});
-		builder.addCase(fetchSoonScreen.fulfilled, (state, action) => {
+		builder.addCase(getSoonScreen.fulfilled, (state, action) => {
 			state.loading = false;
 			state.data = action.payload;
 		});
-		builder.addCase(fetchSoonScreen.rejected, (state, action) => {
+		builder.addCase(getSoonScreen.rejected, (state, action) => {
 			state.loading = false;
 			state.error = action.error.message;
 		});

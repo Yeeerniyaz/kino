@@ -1,11 +1,15 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { AsyncStorage } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from '../../axios';
 
-export const fetchGetNowScreen = createAsyncThunk('nowScreen/fetchGetNowScreen', async () => {
+export const getNowScreen = createAsyncThunk('nowScreen/fetchGetNowScreen', async () => {
 	const location = await AsyncStorage.getItem('location');
-	const date = new Date();
-	const { data } = await axios.get(`api/movie/today?city=${location}&start=${date}`);
+	const myLocation = JSON.parse(location);
+	const currentDate = new Date();
+	const isoDateTime = currentDate.toISOString();
+
+	const { data } = await axios.get(`api/movie/today?city=${myLocation.id}&start=${isoDateTime}`);
+	return data;
 });
 
 const initialState = {
@@ -19,14 +23,14 @@ const nowScreenSlice = createSlice({
 	initialState,
 	reducers: {},
 	extraReducers: (builder) => {
-		builder.addCase(fetchGetNowScreen.pending, (state) => {
+		builder.addCase(getNowScreen.pending, (state) => {
 			state.loading = true;
 		});
-		builder.addCase(fetchGetNowScreen.fulfilled, (state, action) => {
+		builder.addCase(getNowScreen.fulfilled, (state, action) => {
 			state.loading = false;
 			state.data = action.payload;
 		});
-		builder.addCase(fetchGetNowScreen.rejected, (state, action) => {
+		builder.addCase(getNowScreen.rejected, (state, action) => {
 			state.loading = false;
 			state.error = action.error;
 		});

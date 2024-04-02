@@ -1,10 +1,11 @@
-import { Tuple, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { AsyncStorage } from 'react-native';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from '../../axios';
 
-export const fetchCinemarks = createAsyncThunk('cinemarks/fetchCinemarks', async () => {
+export const getCinemarks = createAsyncThunk('cinemarks/fetchCinemarks', async () => {
 	const location = await AsyncStorage.getItem('location');
-	const { data } = await axios.get(`api/city/${location}/objects`);
+	const myLocation = JSON.parse(location);
+	const { data } = await axios.get(`api/city/${myLocation.id}/objects`);
 	return data;
 });
 
@@ -20,14 +21,14 @@ const cinemarksSlice = createSlice({
 	reducers: {},
 	extraReducers: (builder) => {
 		builder
-			.addCase(fetchCinemarks.pending, (state) => {
+			.addCase(getCinemarks.pending, (state) => {
 				state.loading = true;
 			})
-			.addCase(fetchCinemarks.fulfilled, (state, action) => {
+			.addCase(getCinemarks.fulfilled, (state, action) => {
 				state.data = action.payload;
 				state.loading = false;
 			})
-			.addCase(fetchCinemarks.rejected, (state, action) => {
+			.addCase(getCinemarks.rejected, (state, action) => {
 				state.error = action.error.message;
 				state.loading = false;
 			});
